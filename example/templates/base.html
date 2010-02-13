@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>{% load i18n %}{% get_current_language as LANGUAGE_CODE %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="{{ LANGUAGE_CODE|slice:":2"|lower }}">
+  <head>
+    {% block head %}
+      <meta http-equiv="content-type" content="text/html ; charset=utf-8" />
+      <meta http-equiv="content-language" content="en" />
+      <title>Example application for django-simple-friends | {% block title %}{% endblock %}</title>
+      {% block extra_head %}{% endblock %}
+    {% endblock head %}
+  </head>
+  <body>{% block body %}
+    <div id="page">
+      <div id="header">
+        <div id="links"><a href="http://github.com/muhuk/django-simple-friends">Official Homepage</a></div>
+        <a href="{% url homepage %}">
+          <h1>django-simple-friends</h1>
+          <h2>Example Application</h2>
+        </a>
+      </div>
+
+      <div id="page_main">
+        <div id="page_left">
+          <div id="content">{% block content %}{% endblock content %}</div>
+        </div>
+      </div>
+
+      <div id="footer"><a href="http://github.com/muhuk/django-simple-friends">django-simple-friends</a></div>
+    </div>
+  {% endblock body %}</body>
+</html>
