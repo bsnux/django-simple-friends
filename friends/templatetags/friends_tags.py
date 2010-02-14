@@ -6,6 +6,15 @@ from friends.models import FriendshipRequest, Friendship, UserBlocks
 register = template.Library()
 
 
+def _get_user(value):
+    if isinstance(value, User):
+        return value
+    elif hasattr(value, 'user') and isinstance(value.user, User):
+        return value.user
+    else:
+        raise ValueError
+
+
 @register.tag
 def friends_of(parser, token):
     tag_name, user_var = token.split_contents()
@@ -20,6 +29,23 @@ class FriendsOfNode(template.Node):
         user = self.user_var.resolve(context)
         context.update({'friends': Friendship.objects.friends_of(user, True)})
         return u''
+
+
+@register.filter
+def are_friends(value, arg):
+    try:
+        user = _get_user(value)
+    except ValueError:
+        raise template.TemplateSyntaxError('are_friends filter can only be ' \
+                                           'applied to User\'s or objects ' \
+                                           'with a `user` attribute.')
+    try:
+        target = _get_user(arg)
+    except ValueError:
+        raise template.TemplateSyntaxError('are_friends filter\'s argument ' \
+                                           'must be a User or an object ' \
+                                           'with a `user` attribute.')
+    return Friendship.objects.are_friends(target, user)
 
 
 @register.tag
@@ -110,15 +136,6 @@ class BlockUserLinkNode(template.Node):
             return u''
 
 
-def _get_user(value):
-    if isinstance(value, User):
-        return value
-    elif hasattr(value, 'user') and isinstance(value.user, User):
-        return value.user
-    else:
-        raise ValueError
-
-
 @register.filter
 def blocked_by(value, arg):
     try:
@@ -133,7 +150,4 @@ def blocked_by(value, arg):
         raise template.TemplateSyntaxError('blocked_by filter\'s argument ' \
                                            'must be a User or an object ' \
                                            'with a `user` attribute.')
-    if UserBlocks.objects.filter(user=target, blocks=user).count():
-        return True
-    else:
-        return False
+    return UserBlocks.objects.filter(user=target, blocks=user).count():
