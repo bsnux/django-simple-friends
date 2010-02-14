@@ -6,11 +6,13 @@ from friends.models import FriendshipRequest, Friendship, UserBlocks
 register = template.Library()
 
 
-def _get_user(value):
+def _get_user(value, error_message=None):
     if isinstance(value, User):
         return value
     elif hasattr(value, 'user') and isinstance(value.user, User):
         return value.user
+    elif error_message:
+        raise template.TemplateSyntaxError(error_message)
     else:
         raise ValueError
 
@@ -32,19 +34,11 @@ class FriendsOfNode(template.Node):
 
 
 @register.filter
-def are_friends(value, arg):
-    try:
-        user = _get_user(value)
-    except ValueError:
-        raise template.TemplateSyntaxError('are_friends filter can only be ' \
-                                           'applied to User\'s or objects ' \
-                                           'with a `user` attribute.')
-    try:
-        target = _get_user(arg)
-    except ValueError:
-        raise template.TemplateSyntaxError('are_friends filter\'s argument ' \
-                                           'must be a User or an object ' \
-                                           'with a `user` attribute.')
+def is_friend_of(value, arg):
+    user = _get_user(value, 'is_friend_of filter can only be applied to ' \
+                            'User\'s or objects with a `user` attribute.')
+    target = _get_user(arg, 'is_friend_of filter\'s argument must be a ' \
+                            'User or an object with a `user` attribute.')
     return Friendship.objects.are_friends(target, user)
 
 
@@ -137,17 +131,9 @@ class BlockUserLinkNode(template.Node):
 
 
 @register.filter
-def blocked_by(value, arg):
-    try:
-        user = _get_user(value)
-    except ValueError:
-        raise template.TemplateSyntaxError('blocked_by filter can only be ' \
-                                           'applied to User\'s or objects ' \
-                                           'with a `user` attribute.')
-    try:
-        target = _get_user(arg)
-    except ValueError:
-        raise template.TemplateSyntaxError('blocked_by filter\'s argument ' \
-                                           'must be a User or an object ' \
-                                           'with a `user` attribute.')
-    return UserBlocks.objects.filter(user=target, blocks=user).count():
+def is_blocked_by(value, arg):
+    user = _get_user(value, 'is_blocked_by filter can only be applied to ' \
+                            'User\'s or objects with a `user` attribute.')
+    target = _get_user(arg, 'is_blocked_by filter\'s argument must be a ' \
+                            'User or an object with a `user` attribute.')
+    return UserBlocks.objects.filter(user=target, blocks=user).count()
