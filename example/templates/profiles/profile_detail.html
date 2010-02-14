@@ -1,6 +1,33 @@
 {% extends "base.html" %}
+{% load friends_tags %}
 
 
 {% block content %}
-    {{ user }} <a href="{% url logout %}">logout</a>
+    <h1>You are {{ user }}</h1>
+
+    <p><a href="{% url logout %}">logout</a></p>
+
+    <table>{% friends_of user %}
+        <tr>
+            <th>Username</th>
+            <th colspan="2">Friendship</th>
+            <th colspan="2">Blocking</th>
+        </tr>
+    {% with user as me %}{% for user in users %}
+        {% ifnotequal user me %}<tr>
+            <td>{{ user }}</td>
+            <td>{% if user|is_friend_of:me %}
+                <span class="positive">friend</span>
+            {% else %}
+                <span class="neutral">not friend</span>
+            {% endif %}</td>
+            <td>{% add_to_friends user me %}</td>
+            <td>{% if user|is_blocked_by:me %}
+                <span class="negative">blocked</span>
+            {% else %}
+                <span class="neutral">not blocked</span>
+            {% endif %}</td>
+            <td>{% block_user user me %}</td>
+        </tr>{% endifnotequal %}
+    {% endfor %}{% endwith %}</table>
 {% endblock content %}

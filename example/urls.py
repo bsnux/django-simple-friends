@@ -4,6 +4,7 @@ from django.conf import settings
 
 urlpatterns = patterns('',
     ('', include('profiles.urls')),
+    ('^friends/', include('friends.urls')),
 )
 
 

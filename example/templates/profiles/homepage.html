@@ -2,7 +2,9 @@
 
 
 {% block content %}
-    {% for user in users %}
-        <a href="{% url login user.username %}">{{ user }}</a>
-    {% endfor %}
+    <h1>Wellcome</h1>
+    <p>Click the links below to login:</p>
+    <ul>{% for user in users %}
+        <li><a href="{% url login user.username %}">{{ user }}</a></li>
+    {% endfor %}</ul>
 {% endblock content %}
