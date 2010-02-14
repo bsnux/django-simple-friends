@@ -1,0 +1,12 @@
+{% load i18n %}
+{% spaceless%}
+  {% if are_friends %}
+      <a href="{% url friendship_delete target_user.username %}">{% trans "Remove" %}</a>
+  {% else %}
+    {% if not is_invited %}
+      <a href="{% url friendship_request target_user.username %}">{% trans "Add" %}</a>
+    {% else %}
+      <a href="{% url friendship_cancel target_user.username %}">{% trans "Cancel Request" %}</a>
+    {% endif %}
+  {% endif %}
+{% endspaceless %}

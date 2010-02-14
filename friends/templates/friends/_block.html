@@ -1,0 +1,8 @@
+{% load i18n %}
+{% spaceless%}
+  {% if is_blocked %}
+    <a href="{% url unblock_user target_user.username %}">{% trans "Unblock" %}</a>
+  {% else %}
+    <a href="{% url block_user target_user.username %}">{% trans "Block" %}</a>
+  {% endif %}
+{% endspaceless %}
